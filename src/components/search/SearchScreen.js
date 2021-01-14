@@ -1,94 +1,72 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 import queryString from "query-string";
 
-import { useLocation } from 'react-router-dom';
-import { HeroCard } from '../heroes/HeroCard';
-import { useForm } from '../hooks/useForm';
-import { getHeroesByName } from '../../selectors/getHeroesByName';
-
+import { useLocation } from "react-router-dom";
+import { HeroCard } from "../heroes/HeroCard";
+import { useForm } from "../hooks/useForm";
+import { getHeroesByName } from "../../selectors/getHeroesByName";
 
 export const SearchScreen = ({ history }) => {
+  const location = useLocation();
 
-    const location = useLocation();
-    
-    const { q = ''} = queryString.parse(location.search);
+  const { q = "" } = queryString.parse(location.search);
 
-    const [ formValues, handleInputChange] = useForm( {searchText: q} );
-    
-    const { searchText } = formValues;
-    
-    
-    const heroesFiltered = useMemo(() => getHeroesByName( q ), [q]);
+  const [formValues, handleInputChange] = useForm({ searchText: q });
 
-    const handleSearch = (e) => {
-        e.preventDefault(); 
-        history.push(`?q=${searchText}`);
-    }
+  const { searchText } = formValues;
 
-    return (
-        <div>
-            <h1>Search Screen</h1>
-            <hr />
+  const heroesFiltered = useMemo(() => getHeroesByName(q), [q]);
 
-            <div className="row">
+  const handleSearch = (e) => {
+    e.preventDefault();
+    history.push(`?q=${searchText}`);
+  };
 
-                <div className="col-5">
-                    <h4>Search Form</h4>
-                    <hr />
+  return (
+    <div>
+      <h1>Search Screen</h1>
+      <hr />
 
-                    <form>
-                        <input 
-                            type="text"
-                            placeholder="Find your hero"
-                            className="form-control"
-                            name="searchText"
-                            autoComplete="off"
-                            value={searchText}
-                            onChange={handleInputChange}
-                        />
+      <div className="row">
+        <div className="col-5">
+          <h4>Search Form</h4>
+          <hr />
 
-                        <button
-                            type="submit"
-                            className="btn m-1 bt-block btn-outline-primary"
-                            onClick={handleSearch}
-                        >
-                            Search...
-                        </button>
-                        
-                    </form>
-                </div>
+          <form>
+            <input
+              type="text"
+              placeholder="Find your hero"
+              className="form-control"
+              name="searchText"
+              autoComplete="off"
+              value={searchText}
+              onChange={handleInputChange}
+            />
 
-                <div className="col-7">
-                    <h4> Results</h4>
-                    <hr />
-
-                    {
-                        (q === '')
-                            &&
-                            <div className="alert alert-info">
-                            Search a hero
-                            </div>
-                    }
-
-                    {
-                        (q !== '' && heroesFiltered.length === 0)
-                            &&
-                            <div className="alert alert-error">
-                                There is no a hero with { q }
-                            </div>
-                    }
-                    {
-                       heroesFiltered.map( hero => (
-                           <HeroCard 
-                                key={ hero.id }
-                                {... hero}
-                           />
-                       )) 
-                    }
-                </div>
-            </div>
+            <button
+              type="submit"
+              className="btn m-1 bt-block btn-outline-primary"
+              onClick={handleSearch}
+            >
+              Search...
+            </button>
+          </form>
         </div>
 
-        
-    )
-}
+        <div className="col-7">
+          <h4> Results</h4>
+          <hr />
+
+          {q === "" && <div className="alert alert-info">Search a hero</div>}
+
+          {q !== "" && heroesFiltered.length === 0 && (
+            <div className="alert alert-error">There is no a hero with {q}</div>
+          )}
+          {heroesFiltered.map((hero) => (
+            <HeroCard key={hero.id} {...hero} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
